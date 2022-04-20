@@ -1,31 +1,29 @@
 import ImagenCripto from './img/imagen-criptos.png'
 import Formulario from './components/Formulario'
+import Resultado from './components/Resultado'
+import { useState, useEffect } from 'react'
+import Spinner from './components/Spinner'
 import styled from '@emotion/styled'
 
 const Contenedor = styled.div`
-  max-width: 900px;
+  max-width: 550px;
   margin: 0 auto;
-  width: 90%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
 
-  @media (min-width: 992px) {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 2rem;
+  @media (max-width: 768px) {
+    max-width: 85%;
+    padding: 60px 0;
+    align-items: flex-start;
   }
 `
-const Imagen = styled.img`
-  max-width: 400px;
-  width: 80%;
-  margin: 100px auto 0 auto;
-  display: block;
-`
-
 const Heading = styled.h1`
   font-family: 'Lato', sans-serif;
   color: #fff;
   text-align: center;
   font-weight: 700;
-  margin-top: 80px;
+  margin-top: 0;
   margin-bottom: 50px;
   font-size: 34px;
 
@@ -40,17 +38,42 @@ const Heading = styled.h1`
 `
 
 const App = () => {
+  const [monedas, setMonedas] = useState({})
+  const [resultado, setResultado] = useState({})
+  const [cargando, setCargando] = useState(false)
+
+  useEffect(() => {
+    if (Object.keys(monedas).length > 0) {
+      const cotizarCripto = async () => {
+        setCargando(true)
+        setResultado({})
+
+        const { moneda, criptomoneda } = monedas
+        const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${criptomoneda}&tsyms=${moneda}`
+
+        let resultado = await fetch(url)
+        resultado = await resultado.json()
+
+        setResultado(resultado.DISPLAY[criptomoneda][moneda])
+        setCargando(false)
+      }
+
+      cotizarCripto()
+    }
+  }, [monedas])
+
   return (
     <Contenedor>
-      <Imagen
-        src={ImagenCripto}
-        alt='Imagen de criptomonedas'
-      />
-
       <div>
         <Heading>Cotiza Criptomonedas al instante</Heading>
 
-        <Formulario />
+        <Formulario 
+          setMonedas={setMonedas}
+        />
+
+        {cargando && <Spinner />}
+
+        {resultado.PRICE && <Resultado resultado={resultado} />}
       </div>
     </Contenedor>
   )
