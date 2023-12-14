@@ -1,9 +1,9 @@
-import ImagenCripto from './img/imagen-criptos.png'
-import Formulario from './components/Formulario'
-import Resultado from './components/Resultado'
 import { useState, useEffect } from 'react'
-import Spinner from './components/Spinner'
 import styled from '@emotion/styled'
+
+import Formulario from '../components/Formulario'
+import Resultado from '../components/Resultado'
+import Spinner from '../components/Spinner'
 
 const Contenedor = styled.div`
   max-width: 550px;
